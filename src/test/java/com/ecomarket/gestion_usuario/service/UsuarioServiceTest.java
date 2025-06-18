@@ -1,6 +1,7 @@
 package com.ecomarket.gestion_usuario.service;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,27 +15,29 @@ import com.ecomarket.gestion_usuario.repository.UsuarioRepository;
 public class UsuarioServiceTest {
     @Mock
     private UsuarioRepository usuarioRepository;
-
     @InjectMocks
     private UsuarioService usuarioService;
-    
 
     @BeforeEach
-    void setup(){
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
-
     }
 
     @Test
-    void testUpdateUser(){
-       Usuario usuarioExistente = new Usuario(1, "21111111", "hola", "chao", "caca@gmail",
-        "omg", 1, true);
+    void testUpdateUserById() {
+        Usuario usuario = new Usuario();
+        usuario.setId(1);
+        usuario.setRut("12345678-9");
+        usuario.setNombre("John");
+        usuario.setApellido("Doe");
+        usuario.setEmail("jon@ctla.cl");
+        usuario.setPassword("password123");
+        usuario.setRol(0);
+        usuario.setActivo(true);
 
-        Usuario usuarioUpdate = new Usuario(1, null, null, "chaoxd", "cacsssa@gmail",
-        "omgxd", 2, false);
+        when(usuarioRepository.findById(1)).thenReturn(usuario);
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
 
-        when(usuarioRepository.findById(1)).thenReturn(usuarioExistente);
         
-    
     }
 }
