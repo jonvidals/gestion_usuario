@@ -3,7 +3,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,44 +13,14 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ecomarket.gestion_usuario.model.Usuario;
 import com.ecomarket.gestion_usuario.service.UsuarioService;
 
-
 @RestController
 @RequestMapping("/api/usuario")
 public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
-
-    /*@DeleteMapping("/eliminar/{id}") // manda usuario actual por url y usuario a actualizar por body
-    public ResponseEntity<String> eliminarUsuarioPorId(@PathVariable int id, @RequestBody Usuario usuarioEliminar) {  
-        Usuario usuarioActual = usuarioService.getUserById(id);
-        if (usuarioActual == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
-        }
-        if (usuarioActual.getRol() == 0) { // admin
-            Usuario usuarioEliminado = usuarioService.deleteUserById(usuarioEliminar.getId());
-            if (usuarioEliminado != null) {
-                return ResponseEntity.ok("Usuario eliminado con éxito");
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
-            }
-        }
-        if (usuarioActual.getRol() != 0) {
-            if (usuarioActual.getId() == usuarioEliminar.getId()) {
-                Usuario usuarioEliminado = usuarioService.deleteUserById(usuarioEliminar.getId());
-                if (usuarioEliminado != null) {
-                    return ResponseEntity.ok("Usuario eliminado con éxito");
-                } else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Usuario no encontrado");
-                }
-            } else {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("No tienes permiso para eliminar este usuario");
-            }
-        }
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error al eliminar el usuario");
-    }*/
-
+    
     @PutMapping("/actualizar/{id}") 
-    public ResponseEntity<Usuario> actualizarUsuarioPorId(@PathVariable int id, @RequestBody Usuario usuarioActualizar) {
+    public ResponseEntity<Usuario> actualizarUsuarioPorId(@PathVariable long id, @RequestBody Usuario usuarioActualizar) {
         Usuario usuarioActual = usuarioService.getUserById(id);
         if (usuarioActual == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -78,7 +47,7 @@ public class UsuarioController {
 
     @PostMapping("/listar/{id}")
     public ResponseEntity<Usuario> buscarUsuario(
-            @PathVariable int id,
+            @PathVariable long id,
             @RequestBody(required = false) Usuario usuarioBuscar) {
 
         Usuario usuarioActual = usuarioService.getUserById(id);
@@ -112,8 +81,8 @@ public class UsuarioController {
         }
     }
 
-    /*@PutMapping("/desactivar/{id}") 
-    public ResponseEntity<Usuario> desactivarUsuario(@PathVariable int id, @RequestBody Usuario usuarioDesactivar) {
+    @PutMapping("/desactivar/{id}") 
+    public ResponseEntity<Usuario> desactivarUsuario(@PathVariable long id, @RequestBody Usuario usuarioDesactivar) {
         Usuario usuarioActual = usuarioService.getUserById(id);
         if (usuarioActual == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
@@ -138,5 +107,5 @@ public class UsuarioController {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
             }
         }
-    }*/
+    }
 }

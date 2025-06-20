@@ -7,7 +7,5 @@ import org.springframework.stereotype.Repository;
 import com.ecomarket.gestion_usuario.model.Usuario;
 
 @Repository
-public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
-    Usuario findById(int id);
-
+public interface UsuarioRepository extends JpaRepository<Usuario, Long> {
 }
