@@ -29,14 +29,14 @@ public class UsuarioService {
         return null;
     }
 
-    public Usuario deleteUserById(Long id) {
+    /*public Usuario deleteUserById(Long id) {
         Usuario usuario = usuarioRepository.findById(id).orElse(null);
         if (usuario != null) {
             usuarioRepository.delete(usuario);
             return usuario;
         }
         return null;
-    }
+    }*/
 
     public Usuario getUserById(Long id) {
         return usuarioRepository.findById(id).orElse(null);

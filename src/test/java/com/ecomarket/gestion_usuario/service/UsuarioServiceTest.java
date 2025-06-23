@@ -1,8 +1,10 @@
 package com.ecomarket.gestion_usuario.service;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,16 +33,24 @@ public class UsuarioServiceTest {
     @Test
     public void testUpdateUserById() {
         Usuario usuario = new Usuario(1L, "12345678-9", "jona", "vidal", "jonvidal@duoc.com", "password", 1, true);
-        when(usuarioRepository.findById(1L)).thenReturn(java.util.Optional.of(usuario));
-        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuario);
-
+        Usuario usuarioActualizado = new Usuario(1L, "12345678-9", "jona", "vidal", "jonvidal@duoc.com", "password", 1, true);
+        
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        when(usuarioRepository.save(any(Usuario.class))).thenReturn(usuarioActualizado);
+        
         Usuario resultado = usuarioService.updateUserById(usuario);
-
+        
         assertThat(resultado).isNotNull();
         assertThat(resultado.getNombre()).isEqualTo("jona");
-        assertThat(resultado.getEmail()).isEqualTo("jonvidal@duoc.com");
+        assertThat(resultado.getApellido()).isEqualTo("vidal");
+        assertThat(resultado.getEmail()).isEqualTo("jonvidal@duoc.com"); // corregido
+        assertThat(resultado.getPassword()).isEqualTo("password");
+        assertThat(resultado.getRol()).isEqualTo(1);
+        assertThat(resultado.isActivo()).isTrue();
+        
+        verify(usuarioRepository).save(any(Usuario.class));
+}
 
-    }
     @Test
     public void testDesactivarById() {
         Usuario usuario = new Usuario(1L, "12345678-9", "jona", "vidal", "jonvidal@duoc.com", "password", 1, true);
@@ -51,6 +61,7 @@ public class UsuarioServiceTest {
 
         assertThat(resultado).isNotNull();
         assertThat(resultado.isActivo()).isFalse();
+        verify(usuarioRepository).save(any(Usuario.class));
     }
     @Test
     public void testGetAllUsers() {
@@ -64,6 +75,7 @@ public class UsuarioServiceTest {
         assertThat(resultados.size()).isEqualTo(2);
         assertThat(resultados.get(0).getNombre()).isEqualTo("jona");
         assertThat(resultados.get(1).getNombre()).isEqualTo("juan");
+        verify(usuarioRepository).findAll();
     }
     @Test
     public void testGetUserById() {
@@ -74,5 +86,12 @@ public class UsuarioServiceTest {
 
         assertThat(resultado).isNotNull();
         assertThat(resultado.getNombre()).isEqualTo("jon");
+        assertThat(resultado.getApellido()).isEqualTo("vidal");
+        assertThat(resultado.getEmail()).isEqualTo("jon.vidal@duoc.com");
+        assertThat(resultado.getPassword()).isEqualTo("password");
+        assertThat(resultado.getRol()).isEqualTo(1);
+        assertThat(resultado.isActivo()).isTrue();
+        verify(usuarioRepository).findById(1L);
+
     }
 }
