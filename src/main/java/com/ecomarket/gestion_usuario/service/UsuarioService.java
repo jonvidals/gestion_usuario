@@ -38,7 +38,7 @@ public class UsuarioService {
         return null;
     }*/
 
-    public Usuario getUserById(Long id) {
+    public Usuario findById(Long id) {
         return usuarioRepository.findById(id).orElse(null);
     }
 

@@ -78,20 +78,17 @@ public class UsuarioServiceTest {
         verify(usuarioRepository).findAll();
     }
     @Test
-    public void testGetUserById() {
-        Usuario usuario = new Usuario(1L, "12345678-9", "jon", "vidal", "jon.vidal@duoc.com", "password", 1, true);
-        when(usuarioRepository.findById(1L)).thenReturn(java.util.Optional.of(usuario));
-
-        Usuario resultado = usuarioService.getUserById(1L);
-
+    public void testFindById() {
+        Usuario usuario = new Usuario(1L, "12345678-9", "jona", "vidal", "jon.vidal@duoc.com", "password", 1, true);
+        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        Usuario resultado = usuarioService.findById(1L);
         assertThat(resultado).isNotNull();
-        assertThat(resultado.getNombre()).isEqualTo("jon");
+        assertThat(resultado.getNombre()).isEqualTo("jona");
         assertThat(resultado.getApellido()).isEqualTo("vidal");
         assertThat(resultado.getEmail()).isEqualTo("jon.vidal@duoc.com");
         assertThat(resultado.getPassword()).isEqualTo("password");
         assertThat(resultado.getRol()).isEqualTo(1);
         assertThat(resultado.isActivo()).isTrue();
         verify(usuarioRepository).findById(1L);
-
     }
 }

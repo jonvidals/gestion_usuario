@@ -21,7 +21,7 @@ public class UsuarioController {
     
     @PutMapping("/actualizar/{id}") 
     public ResponseEntity<Usuario> actualizarUsuarioPorId(@PathVariable long id, @RequestBody Usuario usuarioActualizar) {
-        Usuario usuarioActual = usuarioService.getUserById(id);
+        Usuario usuarioActual = usuarioService.findById(id);
         if (usuarioActual == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
@@ -50,14 +50,14 @@ public class UsuarioController {
             @PathVariable long id,
             @RequestBody(required = false) Usuario usuarioBuscar) {
 
-        Usuario usuarioActual = usuarioService.getUserById(id);
+        Usuario usuarioActual = usuarioService.findById(id);
         if (usuarioActual == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
 
         if (usuarioActual.getRol() == 0) { //admin
             if (usuarioBuscar != null && usuarioBuscar.getId() != 0) {
-                Usuario usuario = usuarioService.getUserById(usuarioBuscar.getId());
+                Usuario usuario = usuarioService.findById(usuarioBuscar.getId());
                 if (usuario != null) {
                     return ResponseEntity.ok(usuario);
                 } else {
@@ -71,7 +71,7 @@ public class UsuarioController {
         }
     }
 
-    @GetMapping("/listar") // Lista todos los usuarios
+    @GetMapping("/listar") 
     public ResponseEntity<List<Usuario>> listarUsuarios() {
         List<Usuario> usuarios = usuarioService.getAllUsers();
         if (usuarios != null && !usuarios.isEmpty()) {
@@ -83,7 +83,7 @@ public class UsuarioController {
 
     @PutMapping("/desactivar/{id}") 
     public ResponseEntity<Usuario> desactivarUsuario(@PathVariable long id, @RequestBody Usuario usuarioDesactivar) {
-        Usuario usuarioActual = usuarioService.getUserById(id);
+        Usuario usuarioActual = usuarioService.findById(id);
         if (usuarioActual == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         }
