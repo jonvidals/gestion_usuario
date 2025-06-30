@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import com.ecomarket.gestion_usuario.model.Usuario;
 import com.ecomarket.gestion_usuario.service.UsuarioService;
 
@@ -88,4 +87,5 @@ public class UsuarioController {
 
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
     }
+
 }
