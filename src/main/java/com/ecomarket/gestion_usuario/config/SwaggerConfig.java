@@ -12,8 +12,8 @@ public class SwaggerConfig {
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .info(new Info()
-                        .title("API 2026 Reservas de salas")
+                        .title("API EcoMarket - Gestión de Usuarios")
                         .version("1.0")
-                        .description("Documentación de la API para el sistema de reserva de salas"));
+                        .description("Documentación de la API para el sistema de gestión de usuarios"));
     }
 }
