@@ -241,4 +241,5 @@ public class UsuarioControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nombre").value("User"));
     }
+
 }
