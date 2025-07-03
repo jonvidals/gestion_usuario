@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import com.ecomarket.gestion_usuario.model.Usuario;
 import com.ecomarket.gestion_usuario.service.UsuarioService;
 
@@ -20,72 +21,59 @@ public class UsuarioController {
     public ResponseEntity<Usuario> actualizarUsuarioPorId(@PathVariable long id, @RequestBody Usuario usuarioActualizar) {
         Usuario usuarioActual = usuarioService.findById(id);
         if (usuarioActual == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.notFound().build();
         }
 
-        if (usuarioActual.getRol() == 0 || usuarioActual.getId() == usuarioActualizar.getId()) {
-            Usuario usuarioActualizado = usuarioService.updateUserById(usuarioActualizar);
-            if (usuarioActualizado != null) {
-                return ResponseEntity.ok(usuarioActualizado);
-            } else {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-            }
+        if (usuarioActual.getRol() == 0 || usuarioActual.getId().equals(usuarioActualizar.getId())) {
+            Usuario actualizado = usuarioService.updateUserById(usuarioActualizar);
+            return (actualizado != null)
+                    ? ResponseEntity.ok(actualizado)
+                    : ResponseEntity.badRequest().build();
         }
 
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
     @PostMapping("/listar/{id}")
     public ResponseEntity<Usuario> buscarUsuario(@PathVariable long id,
-            @RequestBody(required = false) Usuario usuarioBuscar) {
-
+                                                 @RequestBody(required = false) Usuario usuarioBuscar) {
         Usuario usuarioActual = usuarioService.findById(id);
         if (usuarioActual == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.notFound().build();
         }
 
-        if (usuarioActual.getRol() == 0) { // admin
-            if (usuarioBuscar != null && usuarioBuscar.getId() != 0) {
-                Usuario usuario = usuarioService.findById(usuarioBuscar.getId());
-                if (usuario != null) {
-                    return ResponseEntity.ok(usuario);
-                } else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-                }
-            } else {
-                return ResponseEntity.ok(usuarioActual);
-            }
-        } else {
-            return ResponseEntity.ok(usuarioActual);
+        if (usuarioActual.getRol() == 0 && usuarioBuscar != null && usuarioBuscar.getId() != 0) {
+            Usuario usuario = usuarioService.findById(usuarioBuscar.getId());
+            return (usuario != null)
+                    ? ResponseEntity.ok(usuario)
+                    : ResponseEntity.notFound().build();
         }
+
+        return ResponseEntity.ok(usuarioActual);
     }
 
     @GetMapping("/listar")
     public ResponseEntity<List<Usuario>> listarUsuarios() {
         List<Usuario> usuarios = usuarioService.getAllUsers();
-        if (usuarios != null && !usuarios.isEmpty()) {
-            return ResponseEntity.ok(usuarios);
-        }
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        return (!usuarios.isEmpty())
+                ? ResponseEntity.ok(usuarios)
+                : ResponseEntity.notFound().build();
     }
 
     @PutMapping("/desactivar/{id}")
     public ResponseEntity<Usuario> desactivarUsuario(@PathVariable long id, @RequestBody Usuario usuarioDesactivar) {
         Usuario usuarioActual = usuarioService.findById(id);
         if (usuarioActual == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+            return ResponseEntity.notFound().build();
         }
 
-        if (usuarioActual.getRol() == 0 || usuarioActual.getId() == usuarioDesactivar.getId()) {
-            Usuario usuarioDesactivado = usuarioService.desactivarById(usuarioDesactivar.getId());
-            if (usuarioDesactivado != null) {
-                return ResponseEntity.ok(usuarioDesactivado);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
+        if (usuarioActual.getRol() == 0 || usuarioActual.getId().equals(usuarioDesactivar.getId())) {
+            Usuario desactivado = usuarioService.desactivarById(usuarioDesactivar.getId());
+            return (desactivado != null)
+                    ? ResponseEntity.ok(desactivado)
+                    : ResponseEntity.notFound().build();
         }
 
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(null);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
-
 }

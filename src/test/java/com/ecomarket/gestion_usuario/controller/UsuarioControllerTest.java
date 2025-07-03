@@ -30,7 +30,6 @@ public class UsuarioControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
 
-
     @Test
     void testActualizarUsuarioPorAdmin() throws Exception {
         Usuario admin = new Usuario(1L, "11111111-1", "Admin", "blabla", "admin@duoc.cl", "adminpass", 0, true);
@@ -65,7 +64,6 @@ public class UsuarioControllerTest {
     @Test
     void testActualizarUsuarioNoEncontrado() throws Exception {
         when(usuarioService.findById(99L)).thenReturn(null);
-
         Usuario dummy = new Usuario(99L, "99999999-9", "usuario", "noencontrado", "nofound@duoc.cl", "x", 1, true);
 
         mockMvc.perform(put("/api/usuario/actualizar/{id}", 99L)
@@ -73,6 +71,34 @@ public class UsuarioControllerTest {
                 .content(objectMapper.writeValueAsString(dummy)))
                 .andExpect(status().isNotFound());
     }
+
+    @Test
+    void testActualizarUsuarioForbidden() throws Exception {
+        Usuario user = new Usuario(1L, "11111111-1", "User", "Test", "user@duoc.cl", "pass", 1, true);
+        Usuario otroUsuario = new Usuario(2L, "22222222-2", "Otro", "User", "otro@duoc.cl", "pass", 1, true);
+
+        when(usuarioService.findById(1L)).thenReturn(user);
+
+        mockMvc.perform(put("/api/usuario/actualizar/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(otroUsuario)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testActualizarUsuarioBadRequest() throws Exception {
+        Usuario admin = new Usuario(1L, "11111111-1", "Admin", "Apellido", "admin@duoc.cl", "pass", 0, true);
+        Usuario usuarioActualizar = new Usuario(2L, "22222222-2", "Test", "User", "test@duoc.cl", "pass", 1, true);
+
+        when(usuarioService.findById(1L)).thenReturn(admin);
+        when(usuarioService.updateUserById(any())).thenReturn(null);
+
+        mockMvc.perform(put("/api/usuario/actualizar/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(usuarioActualizar)))
+                .andExpect(status().isBadRequest());
+    }
+
     @Test
     void testDesactivarUsuarioPorAdmin() throws Exception {
         Usuario admin = new Usuario(1L, "11111111-1", "Admin", "blabla", "admin@duoc.cl", "adminpass", 0, true);
@@ -107,12 +133,38 @@ public class UsuarioControllerTest {
     @Test
     void testDesactivarUsuarioNoEncontrado() throws Exception {
         when(usuarioService.findById(99L)).thenReturn(null);
-
         Usuario dummy = new Usuario(99L, "99999999-9", "Fake", "User", "fake@duoc.cl", "x", 1, true);
 
         mockMvc.perform(put("/api/usuario/desactivar/{id}", 99L)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(dummy)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testDesactivarUsuarioForbidden() throws Exception {
+        Usuario user = new Usuario(1L, "11111111-1", "User", "Test", "user@duoc.cl", "pass", 1, true);
+        Usuario otroUsuario = new Usuario(2L, "22222222-2", "Otro", "User", "otro@duoc.cl", "pass", 1, true);
+
+        when(usuarioService.findById(1L)).thenReturn(user);
+
+        mockMvc.perform(put("/api/usuario/desactivar/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(otroUsuario)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void testDesactivarUsuarioDevuelveNull() throws Exception {
+        Usuario admin = new Usuario(1L, "11111111-1", "Admin", "Apellido", "admin@duoc.cl", "pass", 0, true);
+        Usuario usuarioDesactivar = new Usuario(2L, "22222222-2", "Test", "User", "test@duoc.cl", "pass", 1, true);
+
+        when(usuarioService.findById(1L)).thenReturn(admin);
+        when(usuarioService.desactivarById(2L)).thenReturn(null);
+
+        mockMvc.perform(put("/api/usuario/desactivar/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(usuarioDesactivar)))
                 .andExpect(status().isNotFound());
     }
 
@@ -137,7 +189,6 @@ public class UsuarioControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-
     @Test
     void testBuscarUsuarioPorAdmin() throws Exception {
         Usuario admin = new Usuario(1L, "11111111-1", "Admin", "blabla", "admin@duoc.cl", "adminpass", 0, true);
@@ -154,14 +205,27 @@ public class UsuarioControllerTest {
     }
 
     @Test
+    void testBuscarUsuarioPorAdminNoEncontrado() throws Exception {
+        Usuario admin = new Usuario(1L, "11111111-1", "Admin", "Apellido", "admin@duoc.cl", "pass", 0, true);
+        Usuario usuarioBuscar = new Usuario(99L, "99999999-9", "No", "Existe", "no@duoc.cl", "pass", 1, true);
+
+        when(usuarioService.findById(1L)).thenReturn(admin);
+        when(usuarioService.findById(99L)).thenReturn(null);
+
+        mockMvc.perform(post("/api/usuario/listar/{id}", 1L)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(usuarioBuscar)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
     void testAutoBuscarseAdmin() throws Exception {
         Usuario admin = new Usuario(1L, "11111111-1", "Admin", "blabla", "admin@duoc.cl", "adminpass", 0, true);
 
         when(usuarioService.findById(1L)).thenReturn(admin);
 
         mockMvc.perform(post("/api/usuario/listar/{id}", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(""))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nombre").value("Admin"));
     }
@@ -173,19 +237,8 @@ public class UsuarioControllerTest {
         when(usuarioService.findById(1L)).thenReturn(user);
 
         mockMvc.perform(post("/api/usuario/listar/{id}", 1L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{}"))
+                .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.nombre").value("User"));
-    }
-
-    @Test
-    void testBuscarUsuarioNoEncontrado() throws Exception {
-        when(usuarioService.findById(99L)).thenReturn(null);
-
-        mockMvc.perform(post("/api/usuario/listar/{id}", 99L)
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("{}"))
-                .andExpect(status().isNotFound());
     }
 }
